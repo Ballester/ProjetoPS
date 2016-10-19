@@ -55,9 +55,13 @@ public class Computer {
             }
             
             if (opcode > 31 && opcode < 128) {
-                if (opcode > 63) {
-                    opcode -= 64;
+                if (opcode > 97) {
+                    opcode -= 96;
                     mod1 = 1;
+                    mod2 = 1;
+                }
+                else if (opcode > 63) {
+                    opcode -= 64;
                     mod2 = 1;
                 }
                 else {
