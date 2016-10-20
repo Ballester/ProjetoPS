@@ -55,13 +55,9 @@ public class Computer {
             }
             
             if (opcode > 31 && opcode < 128) {
-                if (opcode > 97) {
-                    opcode -= 96;
-                    mod1 = 1;
-                    mod2 = 1;
-                }
-                else if (opcode > 63) {
+                if (opcode > 63) {
                     opcode -= 64;
+                    mod1 = 1;
                     mod2 = 1;
                 }
                 else {
@@ -162,7 +158,104 @@ public class Computer {
                         inst.sub(acc, op1);
                     }
                     break;
-                    
+				
+				case 7:
+                    op1 = din.readShort();
+                    if (mod1 == 0) {
+                        inst.store(inst.dirToIm(op1), acc);
+                    }
+                    else{
+                        inst.store(inst.indToIm(op1), acc);
+                    }
+                    break;
+				
+				case 8:
+                    op1 = din.readShort();
+                    if (mod1 == 0) {
+                        inst.write(inst.dirToIm(op1));
+                    }
+                    else if (mod1 == 1) {
+                        inst.write(inst.indToIm(op1));
+                    }
+                    else {
+                        inst.write(op1);
+                    }
+                    break;
+					
+				case 10:
+                    op1 = din.readShort();
+                    if (mod1 == 0) {
+                        inst.divide(acc, inst.dirToIm(op1));
+                    }
+                    else if (mod1 == 1) {
+                        inst.divide(acc, inst.indToIm(op1));
+                    }
+                    else {
+                        inst.divide(acc, op1);
+                    }
+                    break;
+					
+				case 11:
+                    inst.stop();
+				
+				case 12:
+                    op1 = din.readShort();
+                    if (mod1 == 0) {
+                        inst.read();
+                    }
+                    else{
+                        inst.read();
+                    }
+                    break;
+				
+				case 13:
+                    op1 = din.readShort();
+					op2 = din.readShort();
+                    if (mod1 == 0 || mod2 == 0) {
+                        inst.copy(inst.dirToIm(op1), inst.dirToIm(op2));
+                    }
+                    else if (mod1 == 0 || mod2 == 1) {
+                        inst.copy(inst.dirToIm(op1), inst.indToIm(op1));
+                    }
+					else if (mod1 == 0 || mod2 == 2) {
+                        inst.copy(inst.dirToIm(op1), op2);
+                    }
+                    if (mod1 == 1 || mod2 == 0) {
+                        inst.copy(inst.indToIm(op1), inst.dirToIm(op2));
+                    }
+                    else if (mod1 == 1 || mod2 == 1) {
+                        inst.copy(inst.indToIm(op1), inst.indToIm(op1));
+                    }
+					else if (mod1 == 1 || mod2 == 2) {
+                        inst.copy(inst.indToIm(op1), op2);
+                    }
+                    break;
+				
+				case 14:
+                    op1 = din.readShort();
+                    if (mod1 == 0) {
+                        inst.mult(acc, inst.dirToIm(op1));
+                    }
+                    else if (mod1 == 1) {
+                        inst.mult(acc, inst.indToIm(op1));
+                    }
+                    else {
+                        inst.mult(acc, op1);
+                    }
+                    break;
+				
+				case 15:
+                    op1 = din.readShort();
+                    if (mod1 == 0) {
+                        inst.call(sp, acc, inst.dirToIm(op1));
+                    }
+                    else{
+                        inst.call(sp, acc, inst.indToIm(op1));
+                    }
+                    break;
+					
+                case 16:
+                    inst.ret(sp, pc);
                 
             }
             
