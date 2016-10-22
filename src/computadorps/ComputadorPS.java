@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import tela.tela;
 
 /**
  *
@@ -45,7 +46,9 @@ public class ComputadorPS extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        launch(args);
+        tela tela = new tela();
+        tela.show();
+        //launch(args);
     }
     
 }
