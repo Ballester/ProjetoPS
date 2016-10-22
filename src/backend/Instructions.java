@@ -15,27 +15,26 @@ import java.util.Stack;
  */
 public class Instructions {
     
-    Memory memory;
     Scanner scanner;
     public Instructions() {
-        this.memory = new Memory(1024);
         this.scanner = new Scanner(System.in);
     }
     
     /**
      * transforms a value from indirect to direct
+     * @param memory
      * @return the direct position
      */
-    public short indToDir(short pos) {
-        return this.memory.load(pos);
+    public short indToDir(Memory memory, short pos) {
+        return memory.load(pos);
     }
     
-    public short indToIm(short pos) {
-        return this.memory.load(this.memory.load(pos));
+    public short indToIm(Memory memory, short pos) {
+        return memory.load(memory.load(pos));
     }
     
-    public short dirToIm(short pos) {
-        return this.memory.load(pos);
+    public short dirToIm(Memory memory, short pos) {
+        return memory.load(pos);
     }
     
     /**
@@ -82,11 +81,12 @@ public class Instructions {
     
     /**
      * 
+     * @param memory
      * @param pos1: direct memory position
      * @param pos2: direct memory position
      */
-    public void copy(int pos1, int pos2) {
-        this.memory.store(this.memory.load(pos2), pos1);
+    public void copy(Memory memory, int pos1, int pos2) {
+        memory.store(memory.load(pos2), pos1);
     }
     
     public void divide(short acc, short op1) {
@@ -119,15 +119,17 @@ public class Instructions {
     
     /**
      * 
+     * @param memory
      * @param op1: value
      * @param pos: direct memory position
      */
-    public void store(short op1, int pos) {
-        this.memory.store(op1, pos);
+    public void store(Memory memory, short op1, int pos) {
+        memory.store(op1, pos);
     }
     
     /**
      * 
+     * @param acc
      * @param pos: access memory position 
      */
     public void load(short acc, short pos) {
