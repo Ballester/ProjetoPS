@@ -11,7 +11,7 @@ package backend;
  */
 public class Memory {
     
-    short[] memory;
+    public short[] memory;
     public int size;
     public Memory(int size) {
         this.memory = new short[size];
@@ -19,6 +19,10 @@ public class Memory {
     }
     
     public void store(short value, int pos) {
+        this.memory[pos] = value;
+    }
+    
+    public void store(short value, short pos) {
         this.memory[pos] = value;
     }
     

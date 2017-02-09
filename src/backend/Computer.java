@@ -28,16 +28,22 @@ public class Computer {
     Instructions inst;
     public Memory memoria;
             
-    public Computer(Memory memoria,byte modoDeOperacao) {
+    public Computer(Memory memoria) {
         this.sp = new Stack();
         this.pc = 0;
         this.acc = this.ri = this.re = 0;
-        this.modOp = modoDeOperacao;
+        //this.modOp = modoDeOperacao;
         this.inst = new Instructions();
         this.memoria = memoria;
         
+        
 
-
+    }
+    
+    public void reset(){
+        this.sp = new Stack();
+        this.pc = 0;
+        this.acc = this.ri = this.re = 0;
     }
     
     public void run(){
@@ -47,6 +53,8 @@ public class Computer {
         
         if (this.modOp == 0) {
             opcode = memoria.load(pc++);
+            
+            //System.out.println("opcode: " + opcode);
             
             if (opcode > 31 && opcode < 128) {
 				if (opcode > 97) {
@@ -81,95 +89,107 @@ public class Computer {
             switch(opcode) {
                 case 0:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.br(pc, op1);
+                        pc = inst.br(op1);
                     }
                     else {
-                        inst.br(pc, inst.indToDir(memoria, op1));
+                        pc = inst.br(inst.indToDir(memoria, op1));
                     }
                     break;
                     
                 case 1:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.brPos(pc, op1, this.acc);
+                        pc = inst.brPos(pc, op1, this.acc);
                     }
                     else {
-                        inst.brPos(pc, inst.indToDir(memoria, op1), this.acc);
+                        pc = inst.brPos(pc, inst.indToDir(memoria, op1), this.acc);
                     }
                     break;
                     
                 case 2:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.add(acc, inst.dirToIm(memoria, op1));
+                        acc = inst.add(acc, inst.dirToIm(memoria, op1));
                     }
                     else if (mod1 == 1) {
-                        inst.add(acc, inst.indToIm(memoria, op1));
+                        acc = inst.add(acc, inst.indToIm(memoria, op1));
                     }
                     else {
-                        inst.add(acc, op1);
+                        acc = inst.add(acc, op1);
                     }
                     break;
                     
                 case 3:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.load(acc, inst.dirToIm(memoria, op1));
+                        acc = inst.load( inst.dirToIm(memoria, op1));
+                        //System.out.println("acumulador: " + acc);
                     }
                     else if (mod1 == 1) {
-                        inst.load(acc, inst.indToIm(memoria, op1));
+                        acc = inst.load(inst.indToIm(memoria, op1));
                     }
                     else {
-                        inst.load(acc, op1);
+                        acc = inst.load(op1);
                     }
                     break;
                     
                 case 4:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.brZero(pc, op1, acc);
+                        pc = inst.brZero(pc, op1, acc);
                     }
                     else if (mod1 == 1) {
-                        inst.brZero(pc, inst.indToDir(memoria, op1), acc);
+                        pc = inst.brZero(pc, inst.indToDir(memoria, op1), acc);
                     }
                     break;
                     
                 case 5:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.brZero(pc, op1, acc);
+                        pc = inst.brNeg(pc, op1, acc);
                     }
                     else if (mod1 == 1) {
-                        inst.brNeg(pc, inst.indToDir(memoria, op1), acc);
+                        pc = inst.brNeg(pc, inst.indToDir(memoria, op1), acc);
                     }
                     break;
                     
                 case 6:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.sub(acc, inst.dirToIm(memoria, op1));
+                        acc = inst.sub(acc, inst.dirToIm(memoria, op1));
                     }
                     else if (mod1 == 1) {
-                        inst.sub(acc, inst.indToIm(memoria, op1));
+                        acc = inst.sub(acc, inst.indToIm(memoria, op1));
                     }
                     else {
-                        inst.sub(acc, op1);
+                        acc = inst.sub(acc, op1);
                     }
                     break;
 				
-				case 7:
+		case 7:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.store(memoria, inst.dirToIm(memoria, op1), acc);
+                        //inst.store(memoria, inst.dirToIm(memoria, op1), acc);
+                        memoria.store(acc, inst.dirToIm(memoria, op1));
                     }
                     else{
-                        inst.store(memoria, inst.indToIm(memoria, op1), acc);
+                        //inst.store(memoria, inst.indToIm(memoria, op1), acc);
+                        memoria.store(acc, inst.indToIm(memoria, op1));
                     }
                     break;
 				
-				case 8:
+		case 8:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
                         inst.write(inst.dirToIm(memoria, op1));
                     }
@@ -181,24 +201,26 @@ public class Computer {
                     }
                     break;
 					
-				case 10:
+		case 10:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.divide(acc, inst.dirToIm(memoria, op1));
+                        acc = inst.divide(acc, inst.dirToIm(memoria, op1));
                     }
                     else if (mod1 == 1) {
-                        inst.divide(acc, inst.indToIm(memoria, op1));
+                        acc = inst.divide(acc, inst.indToIm(memoria, op1));
                     }
                     else {
-                        inst.divide(acc, op1);
+                        acc = inst.divide(acc, op1);
                     }
                     break;
 					
-				case 11:
+		case 11:
                     inst.stop();
 				
-				case 12:
+		case 12:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
                         inst.read();
                     }
@@ -207,9 +229,11 @@ public class Computer {
                     }
                     break;
 				
-				case 13:
+		case 13:
                     op1 = memoria.load(pc++);
-					op2 = memoria.load(pc++);
+                    re = op1;
+                    op2 = memoria.load(pc++);
+                    re = op2;  
                     if (mod1 == 0 && mod2 == 0) {
                         inst.copy(memoria, inst.dirToIm(memoria, op1), inst.dirToIm(memoria, op2));
                     }
@@ -232,33 +256,41 @@ public class Computer {
 				
 				case 14:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.mult(acc, inst.dirToIm(memoria, op1));
+                        acc = inst.mult(acc, inst.dirToIm(memoria, op1));
                     }
                     else if (mod1 == 1) {
-                        inst.mult(acc, inst.indToIm(memoria, op1));
+                        acc = inst.mult(acc, inst.indToIm(memoria, op1));
                     }
                     else {
-                        inst.mult(acc, op1);
+                        acc = inst.mult(acc, op1);
                     }
                     break;
 				
-				case 15:
+		case 15:
                     op1 = memoria.load(pc++);
+                    re = op1;
                     if (mod1 == 0) {
-                        inst.call(sp, acc, inst.dirToIm(memoria, op1));
+                        sp = inst.call(sp, acc);
+                        pc = inst.dirToIm(memoria, op1);
                     }
                     else{
-                        inst.call(sp, acc, inst.indToIm(memoria, op1));
+                        sp = inst.call(sp, acc);
+                        pc = inst.indToIm(memoria, op1);
+                        
                     }
                     break;
 					
                 case 16:
-                    inst.ret(sp, pc);
+                    pc = inst.ret(sp, pc);
+                    sp.pop();
                 
             }
             
         }
+        
+        ri = memoria.load(pc); //atualiza Registrador de Instrucao
     }
     
 }

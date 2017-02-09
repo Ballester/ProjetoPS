@@ -43,40 +43,43 @@ public class Instructions {
      * @param op1: value
      * @return 
      */
-    public void add(short acc, short op1) {
-        acc = (short) (acc + op1);
+    public short add(short acc, short op1) {
+        return (short) (acc + op1);
     }
    
     /**
      * 
-     * @param pc: valor
      * @param op1: valor
+     * @return 
      */
-    public void br(short pc, short op1) {
-        pc = op1;
+    public short br(short op1) {
+        return op1;
     } 
     
-    public void brNeg(short pc, short op1, short acc) {
+    public short brNeg(short pc, short op1, short acc) {
         if (acc < 0) {
-            pc = op1;
+            return op1;
         }
+        return pc;
     }
 
-    public void brPos(short pc, short op1, short acc) {
+    public short brPos(short pc, short op1, short acc) {
         if (acc > 0) {
-            pc = op1;
+            return op1;
         }
+        return pc;
     }
     
-    public void brZero(short pc, short op1, short acc) {
+    public short brZero(short pc, short op1, short acc) {
         if (acc == 0) {
-            pc = op1;
+            return op1;
         }
+        return pc;
     }
     
-    public void call(Stack sp, short pc, short op1) {
-        sp.push(pc);
-        pc = op1;
+    public Stack call(Stack sp, short pc) {
+        return (Stack) sp.push(pc);
+        
     }
     
     /**
@@ -89,28 +92,28 @@ public class Instructions {
         memory.store(memory.load(pos2), pos1);
     }
     
-    public void divide(short acc, short op1) {
-        acc = (short) (acc/op1);
+    public short divide(short acc, short op1) {
+        return (short) (acc/op1);
     }
     
-    public void mult(short acc, short op1) {
-        acc = (short) (acc*op1);
+    public short mult(short acc, short op1) {
+        return (short) (acc*op1);
     }
     
     public short read() {
         return this.scanner.nextShort();
     }
     
-    public void ret(Stack sp, short pc) {
-        pc = (short) sp.pop();
+    public short ret(Stack sp, short pc) {
+        return (short) sp.pop();
     }
     
     public void stop() {
         exit(0);
     }
     
-    public void sub(short acc, short op1) {
-        acc = (short) (acc - op1);
+    public short sub(short acc, short op1) {
+        return (short) (acc - op1);
     } 
     
     public void write(short op1) {
@@ -127,6 +130,10 @@ public class Instructions {
         memory.store(op1, pos);
     }
     
+    public void store(Memory memory, short op1, short pos) {
+        memory.store(op1, pos);
+    }
+    
     /**
      * 
      * @param acc
@@ -134,6 +141,10 @@ public class Instructions {
      */
     public void load(short acc, short pos) {
         acc = pos;
+    }
+    
+    public short load(short pos){
+        return pos;
     }
     
     
