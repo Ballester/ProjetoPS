@@ -11,9 +11,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -26,12 +29,19 @@ public class tela extends javax.swing.JFrame {
      * Creates new form tela
      */
     public Memory memoria = new Memory(32);
+    Computer mv = new Computer(memoria);
+    int linhaTabSel = 0;
+    javax.swing.Timer timer;
+ 
+    
     
     public tela() {
+        
         initComponents();
+        opMode1.setSelected(true);
         filePath.setText("/Users/mateusmesturini/Dropbox/AULA/PS/TrabMaquinaVirtual/MaquinaVirtual/src/maquinavirtual/file.txt");
         
-        
+     
     }
 
     /**
@@ -49,15 +59,13 @@ public class tela extends javax.swing.JFrame {
         chooseFile = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        nextButton = new javax.swing.JButton();
-        resetButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
+        opMode1 = new javax.swing.JRadioButton();
+        opMode2 = new javax.swing.JRadioButton();
+        opMode3 = new javax.swing.JRadioButton();
         closeButton = new javax.swing.JButton();
         loadCode = new javax.swing.JButton();
         runButton = new javax.swing.JButton();
@@ -100,10 +108,6 @@ public class tela extends javax.swing.JFrame {
             jTable1.getColumnModel().getColumn(3).setResizable(false);
         }
 
-        nextButton.setText("Avançar");
-
-        resetButton.setText("Reiniciar");
-
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
@@ -134,14 +138,14 @@ public class tela extends javax.swing.JFrame {
 
         jLabel2.setText("Modo de Operação");
 
-        buttonGroup1.add(jRadioButton1);
-        jRadioButton1.setText("1");
+        buttonGroup1.add(opMode1);
+        opMode1.setText("Run complete machine");
 
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("2");
+        buttonGroup1.add(opMode2);
+        opMode2.setText("Run slowly (1s per instruction)");
 
-        buttonGroup1.add(jRadioButton3);
-        jRadioButton3.setText("3");
+        buttonGroup1.add(opMode3);
+        opMode3.setText("Run step-by-step (hit RUN for next)");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -149,12 +153,13 @@ public class tela extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel2)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jRadioButton2)
-                        .addComponent(jRadioButton1)
-                        .addComponent(jRadioButton3)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(opMode2)
+                    .addComponent(opMode1)
+                    .addComponent(opMode3)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(jLabel2)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -163,11 +168,11 @@ public class tela extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton1)
+                .addComponent(opMode1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton2)
+                .addComponent(opMode2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jRadioButton3)
+                .addComponent(opMode3)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -213,37 +218,33 @@ public class tela extends javax.swing.JFrame {
                         .addComponent(jLabel1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(closeButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(resetButton)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(nextButton))
+                    .addComponent(closeButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(20, 20, 20))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(55, 55, 55)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(filePath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(chooseFile))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34)
-                        .addComponent(nextButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(resetButton)
-                        .addGap(18, 18, 18)
+                        .addGap(61, 61, 61)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
                         .addComponent(closeButton))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(filePath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(chooseFile))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(loadCode)
                             .addComponent(runButton))
@@ -274,11 +275,13 @@ public class tela extends javax.swing.JFrame {
     public void atualizarTabela(Memory memoria){
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
-        int mod1 = 0;
-        int mod2 = 0;
-        for(int i=0; memoria.size>=i;){
+        
+        
+        for(int i=0; memoria.size>i;){
+            int mod1 = 0;
+            int mod2 = 0;
             
-
+            
             short opcode;
             opcode = memoria.load(i++);
   
@@ -311,7 +314,7 @@ public class tela extends javax.swing.JFrame {
                     mod1 = 2;
                 }
             }
-            
+            System.out.println("opcde: " + opcode);
             switch(opcode) {
                 case 0:
                     if (mod1 == 0) {
@@ -433,8 +436,9 @@ public class tela extends javax.swing.JFrame {
                 case 11:
                     model.addRow(new Object[]{"STOP"});
                     while(i<memoria.size){
-                        model.addRow(new Object[]{memoria.load(i++),"","",""}); //todos os valores apos stop sao dados
+                        model.addRow(new Object[]{memoria.load(i++),"","",""}); //todos os valores apos stop sao dados                     
                     }
+                    break;
 				
 		case 12:
                     
@@ -446,9 +450,9 @@ public class tela extends javax.swing.JFrame {
                     }
                     break;
 				
-				case 13:
+		case 13:
                     
-					
+			 		
                     if (mod1 == 0 && mod2 == 0) {
                         model.addRow(new Object[]{"COPY", memoria.load(i++),memoria.load(i++),"DIR/DIR"});
                     }
@@ -500,6 +504,11 @@ public class tela extends javax.swing.JFrame {
             
         
         }
+        
+        jTable1.setRowSelectionInterval(linhaTabSel, linhaTabSel);
+        linhaTabSel++;
+        System.out.println(linhaTabSel);
+        
     }
     
     //atuzaliza tabela com registradores
@@ -511,13 +520,15 @@ public class tela extends javax.swing.JFrame {
         model.addRow(new Object[]{"ACC", mv.acc});
         model.addRow(new Object[]{"RE", mv.re});
         model.addRow(new Object[]{"RI", mv.ri});
-        model.addRow(new Object[]{"Stack", mv.sp.peek()}); //nao ta inserindo essa ultima linha don' know why...
+        if(mv.sp.empty()){model.addRow(new Object[]{"Stack", "empty"});}
+        else{model.addRow(new Object[]{"Stack", mv.sp.peek()});}
         
         
     
     }
     
     private void loadCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadCodeActionPerformed
+        linhaTabSel = 0;
         try {
             
             //carrega o arquivo na memoria
@@ -529,7 +540,13 @@ public class tela extends javax.swing.JFrame {
             }
             
             //atualiza a tabela com a memoria
+            mv.reset();
             atualizarTabela(memoria);
+            mv.ri = mv.memoria.load(0); //gambiarra pra atualizar o valor RI
+            atualizarRegistradores(mv);
+            
+            
+            
             
             
             
@@ -544,12 +561,41 @@ public class tela extends javax.swing.JFrame {
     }//GEN-LAST:event_loadCodeActionPerformed
 
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
-        Computer mv = new Computer(memoria,(byte)1);
-        mv.run(); //teoricamente rodaria um operacao, mas nao ta rodando direito
-        atualizarRegistradores(mv);//atualiza tabela com registradores
-       
         
         
+        if(opMode1.isSelected()){
+            while(mv.ri != 11){
+                mv.run();
+                atualizarRegistradores(mv);
+                atualizarTabela(mv.memoria);
+            }
+        }
+        
+        if(opMode2.isSelected()){
+            while(mv.ri != 11){
+                mv.run();
+                atualizarRegistradores(mv);
+                atualizarTabela(mv.memoria);
+              
+                
+            }
+        }
+        
+        
+        if(opMode3.isSelected()){
+            if(mv.ri != 11){
+                mv.run();
+                atualizarRegistradores(mv);
+                atualizarTabela(mv.memoria);
+                             
+            }else{
+                
+            }    
+        }
+        if(mv.ri == 11){
+            JFrame frame = new JFrame();
+            JOptionPane.showMessageDialog(frame,"DONE!");
+        }
         
         
     }//GEN-LAST:event_runButtonActionPerformed
@@ -597,16 +643,14 @@ public class tela extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JButton loadCode;
-    private javax.swing.JButton nextButton;
-    private javax.swing.JButton resetButton;
+    private javax.swing.JRadioButton opMode1;
+    private javax.swing.JRadioButton opMode2;
+    private javax.swing.JRadioButton opMode3;
     private javax.swing.JButton runButton;
     // End of variables declaration//GEN-END:variables
 }
