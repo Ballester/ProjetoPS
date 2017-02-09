@@ -179,7 +179,8 @@ public class Computer {
                     re = op1;
                     if (mod1 == 0) {
                         //inst.store(memoria, inst.dirToIm(memoria, op1), acc);
-                        memoria.store(acc, inst.dirToIm(memoria, op1));
+                        //memoria.store(acc, inst.dirToIm(memoria, op1));
+                        memoria.store(acc, op1);
                     }
                     else{
                         //inst.store(memoria, inst.indToIm(memoria, op1), acc);

@@ -577,7 +577,7 @@ public class tela extends javax.swing.JFrame {
                 atualizarRegistradores(mv);
                 atualizarTabela(mv.memoria);
               
-                
+                // precisa fazer um jeito para que ele demore um segundo entre cada operacao
             }
         }
         
