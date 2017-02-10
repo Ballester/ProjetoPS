@@ -7,6 +7,8 @@ package tela;
 
 import backend.Computer;
 import backend.Memory;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -17,6 +19,7 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -572,13 +575,30 @@ public class tela extends javax.swing.JFrame {
         }
         
         if(opMode2.isSelected()){
-            while(mv.ri != 11){
-                mv.run();
-                atualizarRegistradores(mv);
-                atualizarTabela(mv.memoria);
-              
-                // precisa fazer um jeito para que ele demore um segundo entre cada operacao
-            }
+            System.out.println("oi");
+            timer = new Timer(1000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("noiz");
+                    if(mv.ri != 11){
+                        mv.run();
+                        atualizarRegistradores(mv);
+                        atualizarTabela(mv.memoria);
+                        
+                    }
+                    else {
+                        timer.stop();
+                
+                        JFrame frame = new JFrame();
+                        JOptionPane.showMessageDialog(frame,"DONE!");
+
+                    }
+
+                }
+
+            });
+            timer.start();
+            timer.setInitialDelay(0);
         }
         
         
