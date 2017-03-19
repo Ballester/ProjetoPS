@@ -25,16 +25,24 @@ public class Instructions {
      * @param memory
      * @return the direct position
      */
-    public short indToDir(Memory memory, short pos) {
-        return memory.load(pos);
-    }
+//    public short indToDir(Memory memory, short pos) {
+//        return memory.load(pos);
+//    }
+//    
+//    public short indToIm(Memory memory, short pos) {
+//        return memory.load(memory.load(pos));
+//    }
+//    
+//    public short dirToIm(Memory memory, short pos) {
+//        return memory.load(pos);
+//    }
     
-    public short indToIm(Memory memory, short pos) {
-        return memory.load(memory.load(pos));
-    }
     
-    public short dirToIm(Memory memory, short pos) {
-        return memory.load(pos);
+    /**
+     * @return
+     */
+    public void nop() {
+        
     }
     
     /**
@@ -56,27 +64,62 @@ public class Instructions {
         return op1;
     } 
     
-    public short brNeg(short pc, short op1, short acc) {
-        if (acc < 0) {
-            return op1;
-        }
-        return pc;
-    }
-
-    public short brPos(short pc, short op1, short acc) {
-        if (acc > 0) {
-            return op1;
+    public short bne_generic(short pc, short end, boolean reg) {
+        if (!reg) {
+            return end;
         }
         return pc;
     }
     
-    public short brZero(short pc, short op1, short acc) {
-        if (acc == 0) {
-            return op1;
+    public short beq_generic(short pc, short end, boolean reg) {
+        if (reg) {
+            return end;
+        }
+        return pc;
+    }
+        
+    public short bge(short pc, short end, boolean N, boolean V) {
+        if (N == V) {
+            return end;
         }
         return pc;
     }
     
+    public short blt(short pc, short end, boolean N, boolean V) {
+        if (N != V) {
+            return end;
+        }
+        return pc;
+    }
+    
+    public short bgt(short pc, short end, boolean N, boolean V, boolean Z) {
+        if (N == V && !Z) {
+            return end;
+        }
+        return pc;
+    }
+    
+    public short ble(short pc, short end, boolean N, boolean V, boolean Z) {
+        if (N != V || Z) {
+            return end;
+        }
+        return pc;
+    }
+    
+    public short bhi(short pc, short end, boolean C, boolean Z) {
+        if (!C && !Z) {
+            return end;
+        }
+        return pc;
+    }
+    
+    public short bls(short pc, short end, boolean C, boolean Z) {
+        if (C || Z) {
+            return end;
+        }
+        return pc;
+    }
+            
     public Stack call(Stack sp, short pc) {
         return (Stack) sp.push(pc);
         
@@ -88,9 +131,9 @@ public class Instructions {
      * @param pos1: direct memory position
      * @param pos2: direct memory position
      */
-    public void copy(Memory memory, int pos1, int pos2) {
-        memory.store(memory.load(pos2), pos1);
-    }
+//    public void copy(Memory memory, int pos1, int pos2) {
+//        memory.store(memory.load(pos2), pos1);
+//    }
     
     public short divide(short acc, short op1) {
         return (short) (acc/op1);
@@ -100,8 +143,8 @@ public class Instructions {
         return (short) (acc*op1);
     }
     
-    public short read() {
-        return this.scanner.nextShort();
+    public String read() {
+        return this.scanner.nextLine();
     }
     
     public short ret(Stack sp, short pc) {
@@ -126,11 +169,11 @@ public class Instructions {
      * @param op1: value
      * @param pos: direct memory position
      */
-    public void store(Memory memory, short op1, int pos) {
+    public void store(Memory memory, String op1, int pos) {
         memory.store(op1, pos);
     }
     
-    public void store(Memory memory, short op1, short pos) {
+    public void store(Memory memory, String op1, short pos) {
         memory.store(op1, pos);
     }
     

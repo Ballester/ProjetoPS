@@ -11,23 +11,27 @@ package backend;
  */
 public class Memory {
     
-    public short[] memory;
+    public String[] memory;
     public int size;
     public Memory(int size) {
-        this.memory = new short[size];
+        this.memory = new String[size];
         this.size = size;
     }
     
-    public void store(short value, int pos) {
+    public void store(String value, int pos) {
         this.memory[pos] = value;
     }
     
-    public void store(short value, short pos) {
+    public void store(String value, short pos) {
         this.memory[pos] = value;
     }
     
-    public short load(int pos) {
+    public String load(short pos) {
         return this.memory[pos];
+    }
+    
+    public Byte loadByte(short pos) {
+        return Byte.parseByte(this.memory[pos], 2);
     }
     
 }

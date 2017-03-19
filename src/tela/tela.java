@@ -539,7 +539,12 @@ public class tela extends javax.swing.JFrame {
             scanner = new Scanner(new File(filePath.getText())); 
             int i = 0;
             while(scanner.hasNextShort()){
-                memoria.store(scanner.nextShort(), i++);
+                String inst = scanner.nextLine();
+                
+                //Every 4 binaries, store in memory
+                for (int j=0; j<inst.length(); j+=4) {
+                    memoria.store(inst.substring(j, j+4), i++);
+                }
             }
             
             //atualiza a tabela com a memoria
