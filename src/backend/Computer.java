@@ -146,7 +146,6 @@ public class Computer {
                         case 0:
                             pc = inst.br(end);
                             break;
-                        
                         case 1:
                             pc = inst.bne_generic(pc, end, Z);
                             break;
@@ -201,7 +200,7 @@ public class Computer {
                             
                         case 14:
                             pc = inst.bls(pc, end, C, Z);
-                        
+                            break;
                     }
                     
                     break;
@@ -237,8 +236,10 @@ public class Computer {
                     
                 case 8: //instruções de 1 operando PÁGINA 25
                     op1 = this.memoria.loadByte(pc++);
+                    
                     switch(op1) {
                         case 0: //CLR
+                            inst.clr(pc, N, Z);
                             break;
                     
                         case 1: //NOT

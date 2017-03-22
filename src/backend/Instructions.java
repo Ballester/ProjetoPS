@@ -125,6 +125,133 @@ public class Instructions {
         
     }
     
+    public short divide(short acc, short op1) {
+        return (short) (acc/op1);
+    }
+    
+    public short clr(short op1, boolean N, boolean Z) {
+        Z = true;
+        N = false;
+        return (short) (op1 = 0);
+    }
+    
+    public short not(short op1, boolean N, boolean Z, boolean V) {
+        op1 = (short)~op1;
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        V = true;
+        return (short) (op1);
+    }
+    
+    public short inc(short op1, boolean N, boolean Z, boolean V, boolean C) {
+        op1 += 1;
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        if (op1 > 32.767)
+            V = true;
+        if(V)
+            C = true;
+            
+        return (short) (op1);
+    }
+ 
+    public short dec(short op1, boolean N, boolean Z, boolean V, boolean C) {
+        op1 -= 1;
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        if(op1 < -32.768)
+            V = true;
+        if(V)
+            C = true;
+        
+        return (short) (op1);
+    }
+    
+    public short neg (short op1, boolean N, boolean Z, boolean V, boolean C){
+        op1 = (short)-op1;
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        if(op1 == -32.768)
+            V = true;
+        if(V)
+            C = true;
+        
+        return op1;
+    }
+    
+    public void tst( boolean N, boolean Z) {
+        Z = false;
+        N = false;
+    }
+    
+    public short ror(short op1, boolean N, boolean Z, boolean V, boolean C) {
+        short mask = 1;
+        short lsb = (short)(mask & op1);
+        op1 = (short)(lsb >> 1);
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        if(op1 == -32.768)
+            V = true;
+        if(V)
+            C = true;
+        return op1;
+    }
+    
+    public short rol(short op1, boolean N, boolean Z, boolean V, boolean C) {
+        short mask = 1 << 14;
+        short msb = (short)(op1 & mask);
+        op1 = (short)(msb << 1);
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        if(op1 < 32.767)
+            V = true;
+        if(V)
+            C = true;
+        return op1;
+    }
+    
+    public short asr(short op1, boolean N, boolean Z, boolean V, boolean C) {
+        short mask = 1;
+        short lsb = (short)(op1 & mask);
+        op1 = (short)(lsb << 1);
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        if(op1 < 32.767)
+            V = true;
+        if(V)
+            C = true;
+        return op1;
+    }
+    
+    public short asl(short op1, boolean N, boolean Z, boolean V, boolean C) {
+        short mask = 1 << 14;
+        short msb = (short)(op1 & 0);
+        op1 = (short)(msb << 1);
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        if(op1 < 32.767)
+            V = true;
+        if(V)
+            C = true;
+        return op1;
+    }
+    
     /**
      * 
      * @param memory
