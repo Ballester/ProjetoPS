@@ -135,13 +135,13 @@ public class Instructions {
         return (short) (op1 = 0);
     }
     
-    public short not(short op1, boolean N, boolean Z, boolean V) {
+    public short not(short op1, boolean N, boolean Z, boolean C) {
         op1 = (short)~op1;
         if (op1 < 0)
             N = true;
         if(op1 == 0)
             Z = true;
-        V = true;
+        C = true;
         return (short) (op1);
     }
     
@@ -196,14 +196,19 @@ public class Instructions {
         short mask = 1;
         short lsb = (short)(mask & op1);
         op1 = (short)(lsb >> 1);
+        if (lsb == 1)
+            C = true;
+        else
+            C = false;
+        
         if (op1 < 0)
             N = true;
+        
         if(op1 == 0)
             Z = true;
-        if(op1 == -32.768)
-            V = true;
-        if(V)
-            C = true;
+        
+        V = (N ^ C);
+        
         return op1;
     }
     
@@ -211,45 +216,152 @@ public class Instructions {
         short mask = 1 << 14;
         short msb = (short)(op1 & mask);
         op1 = (short)(msb << 1);
+        if (msb == 1)
+            C = true;
+        else
+            C = false;
+        
         if (op1 < 0)
             N = true;
+        
         if(op1 == 0)
             Z = true;
-        if(op1 < 32.767)
-            V = true;
-        if(V)
-            C = true;
+        
+        V = (N ^ C);
+        
         return op1;
     }
     
     public short asr(short op1, boolean N, boolean Z, boolean V, boolean C) {
         short mask = 1;
-        short lsb = (short)(op1 & mask);
-        op1 = (short)(lsb << 1);
+        short lsb = (short)(mask & op1);
+        op1 = (short)(lsb >> 1);
+        if (lsb == 1)
+            C = true;
+        else
+            C = false;
+        
         if (op1 < 0)
             N = true;
+        
         if(op1 == 0)
             Z = true;
-        if(op1 < 32.767)
-            V = true;
-        if(V)
-            C = true;
+        
+        V = (N ^ C);
+        
         return op1;
     }
     
     public short asl(short op1, boolean N, boolean Z, boolean V, boolean C) {
         short mask = 1 << 14;
-        short msb = (short)(op1 & 0);
+        short msb = (short)(op1 & mask);
         op1 = (short)(msb << 1);
+        if (msb == 1)
+            C = true;
+        else
+            C = false;
+        
+        if (op1 < 0)
+            N = true;
+        
+        if(op1 == 0)
+            Z = true;
+        
+        V = (N ^ C);
+        
+        return op1;
+    }
+    
+    public short adc(short op1, boolean N, boolean Z, boolean V, boolean C) {
         if (op1 < 0)
             N = true;
         if(op1 == 0)
             Z = true;
-        if(op1 < 32.767)
+        if (op1 > 32.767)
+            V = true;
+        if(V){
+            C = true;
+            return op1++;
+        }
+        return op1;            
+    }
+    
+    public short sbc(short op1, boolean N, boolean Z, boolean V, boolean C) {
+        if (op1 < 0)
+            N = true;
+        if(op1 == 0)
+            Z = true;
+        if (op1 > 32.767)
+            V = true;
+        if(V){
+            C = true;
+            return op1--;
+        }
+        return op1;            
+    }
+    
+    public void mov(short op1, short op2, boolean N, boolean Z, boolean V){
+        op2 = op1;
+        if (op2 < 0)
+            N = true;
+        if(op2 == 0)
+            Z = true;
+        V = false;
+    }
+    
+    public short add(short op1, short op2, boolean N, boolean Z, boolean V, boolean C){
+        op2 += op1;
+        if (op2 < 0)
+            N = true;
+        if(op2 == 0)
+            Z = true;
+        if (op2 > 32.767)
             V = true;
         if(V)
             C = true;
-        return op1;
+        return op2;
+    }
+    
+    public short sub(short op1, short op2, boolean N, boolean Z, boolean V, boolean C){
+        op2 -= op1;
+        if (op2 < 0)
+            N = true;
+        if(op2 == 0)
+            Z = true;
+        if (op2 < -32.768)
+            V = true;
+        if(V)
+            C = true;
+        return op2;
+    }
+    
+    public boolean cmp(short op1, short op2, boolean N, boolean Z, boolean V){
+        if ((op1 - op2) == 0)
+            return true;
+        if (op2 < 0)
+            N = true;
+        if(op2 == 0)
+            Z = true;
+        V = false;
+        return false;
+    }
+    
+    public short and(short op1, short op2, boolean N, boolean Z, boolean V){
+        if (op2 < 0)
+            N = true;
+        if(op2 == 0)
+            Z = true;
+        V = false;
+        return (short)(op1 & op2);
+    }
+    
+    public short or(short op1, short op2, boolean N, boolean Z, boolean V){
+        if (op2 < 0)
+            N = true;
+        if(op2 == 0)
+            Z = true;
+        V = false;
+        return (short)(op1 | op2);
     }
     
     /**
@@ -261,10 +373,6 @@ public class Instructions {
 //    public void copy(Memory memory, int pos1, int pos2) {
 //        memory.store(memory.load(pos2), pos1);
 //    }
-    
-    public short divide(short acc, short op1) {
-        return (short) (acc/op1);
-    }
     
     public short mult(short acc, short op1) {
         return (short) (acc*op1);

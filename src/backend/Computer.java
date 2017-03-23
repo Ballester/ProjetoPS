@@ -66,7 +66,7 @@ public class Computer {
             String mod_end;
             String mod_end2;
             String end_s;
-            short end;
+            short end, regShort, reg2Short;
             
             //System.out.println("opcode: " + opcode);
             
@@ -236,43 +236,58 @@ public class Computer {
                     
                 case 8: //instruções de 1 operando PÁGINA 25
                     op1 = this.memoria.loadByte(pc++);
+                    end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
+                    mod_end = end_s.substring(2, 5);
+                    reg = end_s.substring(5, 8);
+                    regShort = Short.parseShort(reg);
                     
                     switch(op1) {
                         case 0: //CLR
-                            inst.clr(pc, N, Z);
+                            acc = inst.clr(regShort, N, Z);
                             break;
                     
                         case 1: //NOT
+                            acc = inst.not(regShort, N, Z, V);
                             break;
                             
                         case 2: //INC
+                            acc = inst.inc(regShort, N, Z, V, C);
                             break;
                             
                         case 3: //DEC
+                            acc = inst.dec(regShort, N, Z, V, C);
                             break;
                             
                         case 4: //NEG
+                            acc = inst.neg(regShort, N, Z, V, C);
                             break;
                             
                         case 5: //TST
+                            inst.tst(N, Z);
                             break;
                             
                         case 6: //ROR
+                            acc = inst.ror(regShort, N, Z, V, C);
                             break;
                             
                         case 7: //ROL
+                            acc = inst.rol(regShort, N, Z, V, C);
                             break;
                             
                         case 8: //ASR
+                            acc = inst.asr(regShort, N, Z, V, C);
                             break;
                             
                         case 9: //ASL
+                            acc = inst.asl(regShort, N, Z, V, C);
                             break;
                             
                         case 10: //ADC
+                            acc = inst.adc(regShort, N, Z, V, C);
                             break;
                             
                         case 11: //SBC
+                            acc = inst.sbc(regShort, N, Z, V, C);
                             break;
                             
                             
@@ -286,24 +301,32 @@ public class Computer {
                         end_s = this.memoria.load(pc++);
                         mod_end = end_s.substring(0, 3);
                         reg = end_s.substring(3, 4);
-
+                        regShort = Short.parseShort(reg);
+                        
                         end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
                         reg += end_s.substring(0, 2);
                         mod_end2 = end_s.substring(2, 5);
                         reg2 = end_s.substring(5, 8);
-                          
+                        reg2Short = Short.parseShort(reg2);
+                        
                         switch(opcode) {
                             case 9: //mov
+                                inst.mov(regShort, reg2Short, N, Z, V);
                                 break;
                             case 10: //add
+                                acc = inst.add(regShort, reg2Short, N, Z, V, C);
                                 break;
                             case 11: //sub
+                                acc = inst.sub(regShort, reg2Short, N, Z, V, C);
                                 break;
                             case 12: //cmp
+                                inst.cmp(regShort, reg2Short, N, Z, V);;
                                 break;
                             case 13: //and
+                                inst.and(regShort, reg2Short, N, Z, V);
                                 break;
                             case 14: //or
+                                inst.or(regShort, reg2Short, N, Z, V);
                                 break;
                         }
                         
