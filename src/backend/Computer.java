@@ -125,7 +125,7 @@ public class Computer {
         String mod_end;
         String mod_end2;
         String end_s;
-        short end, regShort, reg2Short, regValueShort, regValue2Short, valueShort;
+        short end, regShort, reg2Short, regValueShort, regValue2Short, valueShort, value2Short;
 
         System.out.println("Opcode: " + opcode);
         switch (opcode) {
@@ -309,46 +309,54 @@ public class Computer {
 
                     case 3: //DEC
                         System.out.println("DEC");
+                        this.hierarchyStore(Integer.toBinaryString(inst.dec(valueShort, N, Z, V, C)), regShort, mod_end);
 //                            acc = inst.dec(regShort, N, Z, V, C);
                         break;
 
                     case 4: //NEG
                         System.out.println("NEG");
+                        this.hierarchyStore(Integer.toBinaryString(inst.neg(valueShort, N, Z, V, C)), regShort, mod_end);
 //                            acc = inst.neg(regShort, N, Z, V, C);
                         break;
 
                     case 5: //TST
                         System.out.println("TST");
-//                            inst.tst(N, Z);
+                        inst.tst(N, Z);
                         break;
 
                     case 6: //ROR
                         System.out.println("ROR");
+                        this.hierarchyStore(Integer.toBinaryString(inst.ror(valueShort, N, Z, V, C)), regShort, mod_end);
 //                            acc = inst.ror(regShort, N, Z, V, C);
                         break;
 
                     case 7: //ROL
                         System.out.println("ROL");
+                        this.hierarchyStore(Integer.toBinaryString(inst.rol(valueShort, N, Z, V, C)), regShort, mod_end);
 //                            acc = inst.rol(regShort, N, Z, V, C);
                         break;
 
                     case 8: //ASR
                         System.out.println("ASR");
+                        this.hierarchyStore(Integer.toBinaryString(inst.asr(valueShort, N, Z, V, C)), regShort, mod_end);
 //                            acc = inst.asr(regShort, N, Z, V, C);
                         break;
 
                     case 9: //ASL
                         System.out.println("ASL");
+                        this.hierarchyStore(Integer.toBinaryString(inst.asl(valueShort, N, Z, V, C)), regShort, mod_end);
 //                            acc = inst.asl(regShort, N, Z, V, C);
                         break;
 
                     case 10: //ADC
                         System.out.println("ADC");
+                        this.hierarchyStore(Integer.toBinaryString(inst.adc(valueShort, N, Z, V, C)), regShort, mod_end);
 //                            acc = inst.adc(regShort, N, Z, V, C);
                         break;
 
                     case 11: //SBC
                         System.out.println("SBC");
+                        this.hierarchyStore(Integer.toBinaryString(inst.sbc(valueShort, N, Z, V, C)), regShort, mod_end);
 //                            acc = inst.sbc(regShort, N, Z, V, C);
                         break;
 
@@ -370,6 +378,7 @@ public class Computer {
                     reg2Short = Short.parseShort(reg2, 2);
                     
                     valueShort = convertModEndToValue(reg, mod_end);
+                    value2Short = convertModEndToValue(reg2, mod_end2);
 
                     switch (opcode) {
                         case 9: //mov
@@ -380,24 +389,28 @@ public class Computer {
                             break;
                         case 10: //add
                             System.out.println("ADD");
-                            acc = inst.add(regShort, reg2Short, N, Z, V, C);
+                            this.hierarchyStore(Integer.toBinaryString(inst.add(valueShort, value2Short, N, Z, V, C)), reg2Short, mod_end2);
+                            //acc = inst.add(regShort, reg2Short, N, Z, V, C);
                             break;
                         case 11: //sub
                             System.out.println("SUB");
-                            acc = inst.sub(regShort, reg2Short, N, Z, V, C);
+                            this.hierarchyStore(Integer.toBinaryString(inst.sub(valueShort, value2Short, N, Z, V, C)), reg2Short, mod_end2);
+                            //acc = inst.sub(regShort, reg2Short, N, Z, V, C);
                             break;
                         case 12: //cmp
                             System.out.println("CMP");
-                            inst.cmp(regShort, reg2Short, N, Z, V);
-                            ;
+                            //this.hierarchyStore(Integer.toBinaryString(inst.cmp(valueShort, value2Short, N, Z, V)), reg2Short, mod_end2);
+                            //inst.cmp(regShort, reg2Short, N, Z, V);
                             break;
                         case 13: //and
                             System.out.println("AND");
-                            inst.and(regShort, reg2Short, N, Z, V);
+                            this.hierarchyStore(Integer.toBinaryString(inst.and(valueShort, value2Short, N, Z, V)), reg2Short, mod_end2);
+                            //inst.and(regShort, reg2Short, N, Z, V);
                             break;
                         case 14: //or
                             System.out.println("OR");
-                            inst.or(regShort, reg2Short, N, Z, V);
+                            this.hierarchyStore(Integer.toBinaryString(inst.or(valueShort, value2Short, N, Z, V)), reg2Short, mod_end2);
+                            //inst.or(regShort, reg2Short, N, Z, V);
                             break;
                     }
 
