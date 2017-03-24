@@ -5,6 +5,7 @@
  */
 package tela;
 
+import Montador.Montador;
 import backend.Computer;
 import backend.Memory;
 import java.awt.event.ActionEvent;
@@ -33,6 +34,7 @@ public class tela extends javax.swing.JFrame {
      */
     public Memory memoria = new Memory(100);
     public Memory regs = new Memory(8);
+    public Montador montador = new Montador();
     public int total_code = 0;
     Computer mv = new Computer(memoria, regs);
     int linhaTabSel = 0;
@@ -44,7 +46,7 @@ public class tela extends javax.swing.JFrame {
         
         initComponents();
         opMode1.setSelected(true);
-        filePath.setText("/home/ballester/Documents/trabalhos/ProjetoPS/src/input_ballester_from_montador");
+        filePath.setText("/home/ballester/Documents/trabalhos/ProjetoPS/src/input_montador");
         
      
     }
@@ -317,8 +319,7 @@ public class tela extends javax.swing.JFrame {
                     
                     switch(internal_code) {
                         case 0:
-                            model.addRow(new Object[]{"BR", "","","IM"});
-                            i++;
+                            model.addRow(new Object[]{"BR", memoria.load(i) + memoria.load(i++),"","IM"});
                             break;
                         case 1:
                             model.addRow(new Object[]{"BNE", "","", "IM"});
@@ -538,6 +539,8 @@ public class tela extends javax.swing.JFrame {
             System.out.println("LOAD CODE");
             while(scanner.hasNextLine()){
                 String inst = scanner.nextLine();
+                
+                inst = montador.convertToCode(inst);
                 
                 //Every 4 binaries, store in memory
                 for (int j=0; j<inst.length(); j+=4) {

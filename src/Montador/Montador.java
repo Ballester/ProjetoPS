@@ -86,7 +86,7 @@ public class Montador {
 
     }
     
-    public void convertToCode(String inst) {
+    public String convertToCode(String inst) {
         String[] parts = inst.split(" ");
         int valid = 0;
         int i=0;
@@ -139,7 +139,10 @@ public class Montador {
         }
         
         System.out.println(trans_copy);
-        this.pc += inst.length()/4;
+        this.pc += trans_copy.length()/4;
+        
+        System.out.println("pc: " + this.pc);
+        return trans_copy;
                 
     }
     
