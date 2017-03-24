@@ -1,4 +1,4 @@
-    /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -19,7 +19,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  * @author pedro
  */
 public class Computer {
-    
+
     public Stack sp;
     public short pc, acc;
     public short re;
@@ -31,316 +31,381 @@ public class Computer {
     Instructions inst;
     public Memory memoria;
     public Memory regs;
-            
+
     public Computer(Memory memoria, Memory registradores) {
         this.sp = new Stack();
         this.pc = 0;
         this.acc = this.re = 0;
         this.ri = "";
         this.N = this.Z = this.V = this.C = false;
-        
+
         //this.modOp = modoDeOperacao;
         this.inst = new Instructions();
         this.memoria = memoria;
-        this.regs = registradores;   
-        
-        
+        this.regs = registradores;
+
     }
-    public void reset(){
+
+    public void reset() {
         this.sp = new Stack();
 //        this.pc = 0;
 //        this.acc = this.re = 0;
 //        this.ri = "";
     }
 
-    public void run(){
-        short opcode = 0;
-        int mod1=0, mod2=0;
-        byte op1, op2;
+    /**
+     * @params mod exemplo: "001"
+     *
+     * @return o valor do registrador que estava sendo buscado
+     */
+    public short convertModEndToValue(String reg, String mod) {
+        short modShort = Short.parseShort(mod, 2);
+        short regShort = Short.parseShort(reg, 2);
+        String regValue = this.regs.load(regShort);
+        short regValueShort = Short.parseShort(regValue, 2);
+        switch (modShort) {
+            case 0:
+//                reg = this.regs.load(regValueShort);
+                break;
+            case 1: //Pós-incrementado
+                regValue = this.memoria.load(regValueShort);
+                regValueShort = Short.parseShort(regValue, 2);
+                break;
+            case 2: //Pré-decrementado
+                regValueShort -= 2;
+                this.regs.store(Integer.toBinaryString(regValueShort), regShort);
+                reg = this.memoria.load(regValueShort);
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            case 8:
+                break;
+        }
+        return regValueShort;
+    }
+    
+    public void hierarchyStore(String value, short end, String mod_end) {
+        short modShort = Short.parseShort(mod_end, 2);
+        switch(modShort) {
+            case 0:
+                this.regs.store(value, end);
+                break;
+            case 1:
+                this.memoria.store(value, end);
+                this.regs.store(Integer.toBinaryString(Short.parseShort(this.memoria.load(end))+2), end);
+                break;
+            case 2:
+                this.memoria.store(value, end);
+                break;
+            //todo mais modos de endereçamento
+        }
+    }
 
-//        if (this.modOp == 0) {
-        opcode = Short.parseShort(this.memoria.load(pc++));
+    public void run() {
+        short opcode = 0;
+        int mod1 = 0, mod2 = 0;
+        byte operation, op1, op2;
+
+        opcode = Short.parseShort(this.memoria.load(pc++), 2);
         String regs;
         String reg;
         String reg2;
+        String regValue;
+        String regValue2;
         String mod_end;
         String mod_end2;
         String end_s;
-        short end, regShort, reg2Short;
+        short end, regShort, reg2Short, regValueShort, regValue2Short, valueShort;
 
-            //System.out.println("opcode: " + opcode);
-            
-            //Verifica o modo de enderaçamento
-//            if (opcode > 31 && opcode < 128) {
-//                if (opcode > 97) {
-//                        opcode -= 96;
-//                        mod1 = 1;
-//                        mod2 = 1;
-//                }
-//                else if (opcode > 63) {
-//                    opcode -= 64;
-//                    mod1 = 1;
-//                    mod2 = 1;
-//                }
-//                else {
-//                    opcode -= 32;
-//                    mod1 = 1;
-//                }
-//            }
-//            else if (opcode >= 128) {
-//                opcode -= 128;
-//                if (opcode == 13 || opcode == 45) {//copy
-//                    mod2 = 2;
-//                    if (opcode == 45) {
-//                        opcode -= 32;
-//                        mod1 = 1;
-//                    }
-//                }
-//                else { //imediato
-//                    mod1 = 2;
-//                }
-//            }
-            
-            switch(opcode) {
+        System.out.println("Opcode: " + opcode);
+        switch (opcode) {
+            //NOP
+            case 0:
+                System.out.println("NOP");
+                pc++;
+                inst.nop();
+                break;
+
+            //CCC
+            case 1:
+                System.out.println("CCC");
+                regs = memoria.load(pc++);
+                if (regs.charAt(0) == '1') {
+                    this.N = true;
+                }
+                if (regs.charAt(1) == '1') {
+                    this.Z = true;
+                }
+                if (regs.charAt(2) == '1') {
+                    this.V = true;
+                }
+                if (regs.charAt(3) == '1') {
+                    this.C = true;
+                }
+                break;
+
+            //SCC
+            case 2:
+                System.out.println("SCC");
+                regs = memoria.load(pc++);
+                if (regs.charAt(0) == '1') {
+                    this.N = false;
+                }
+                if (regs.charAt(1) == '1') {
+                    this.Z = false;
+                }
+                if (regs.charAt(2) == '1') {
+                    this.V = false;
+                }
+                if (regs.charAt(3) == '1') {
+                    this.C = false;
+                }
+                break;
+
+            //condicional
+            case 3:
+                operation = memoria.loadByte(pc++);
+                re = operation;
+
+                //Load 2 extra
+                end_s = memoria.load(pc++) + memoria.load(pc++);
+                end = Short.parseShort(end_s, 2);
+                switch (operation) {
+                    case 0:
+                        System.out.println("BR");
+                        pc = inst.br(end);
+                        break;
+                    case 1:
+                        pc = inst.bne_generic(pc, end, Z);
+                        break;
+
+                    case 2:
+                        pc = inst.beq_generic(pc, end, Z);
+                        break;
+
+                    case 3:
+                        pc = inst.bne_generic(pc, end, N);
+                        break;
+
+                    case 4:
+                        pc = inst.beq_generic(pc, end, N);
+                        break;
+
+                    case 5:
+                        pc = inst.bne_generic(pc, end, V);
+                        break;
+
+                    case 6:
+                        pc = inst.beq_generic(pc, end, V);
+                        break;
+
+                    case 7:
+                        pc = inst.bne_generic(pc, end, C);
+                        break;
+
+                    case 8:
+                        pc = inst.beq_generic(pc, end, C);
+                        break;
+
+                    case 9:
+                        pc = inst.bge(pc, end, N, V);
+                        break;
+
+                    case 10:
+                        pc = inst.blt(pc, end, N, V);
+                        break;
+
+                    case 11:
+                        pc = inst.bgt(pc, end, N, V, Z);
+                        break;
+
+                    case 12:
+                        pc = inst.ble(pc, end, N, V, Z);
+                        break;
+
+                    case 13:
+                        pc = inst.bhi(pc, end, C, Z);
+                        break;
+
+                    case 14:
+                        pc = inst.bls(pc, end, C, Z);
+                        break;
+                }
+
+                break;
+
+            case 4: //#todo
+                pc++; //ignore
+                end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
+                mod_end = end_s.substring(2, 5);
                 
-                //NOP
-                case 0:
-                    inst.nop();
-                    break;
-                    
-                //CCC
-                case 1:
-                    regs = memoria.load(pc++);                          
-                    if (regs.charAt(0) == '1') 
-                        this.N = true;
-                    if (regs.charAt(1) == '1')
-                        this.Z = true;
-                    if (regs.charAt(2) == '1')
-                        this.V = true;
-                    if (regs.charAt(3) == '1')
-                        this.C = true;
-                    break;
-                
-                //SCC
-                case 2:
-                    regs = memoria.load(pc++);
-                    if (regs.charAt(0) == '1') 
-                        this.N = false;
-                    if (regs.charAt(1) == '1')
-                        this.Z = false;
-                    if (regs.charAt(2) == '1')
-                        this.V = false;
-                    if (regs.charAt(3) == '1')
-                        this.C = false;
-                    break;
-                    
-                //condicional
-                case 3:
-                    op1 = memoria.loadByte(pc++);
-                    re = op1;
-                    
-                    //Load 2 extra
-                    end_s = memoria.load(pc++) + memoria.load(pc++);
-                    end = Short.parseShort(end_s, 2);
-                    switch(op1) {
-                        case 0:
-                            pc = inst.br(end);
-                            break;
-                        case 1:
-                            pc = inst.bne_generic(pc, end, Z);
-                            break;
-                        
-                        case 2:
-                            pc = inst.beq_generic(pc, end, Z);
-                            break;
-                            
-                        case 3:
-                            pc = inst.bne_generic(pc, end, N);
-                            break;
-                        
-                        case 4:
-                            pc = inst.beq_generic(pc, end, N);
-                            break;
-                            
-                        case 5:
-                            pc = inst.bne_generic(pc, end, V);
-                            break;
-                            
-                        case 6:
-                            pc = inst.beq_generic(pc, end, V);
-                            break;
-                        
-                        case 7:
-                            pc = inst.bne_generic(pc, end, C);
-                            break;
-                            
-                        case 8:
-                            pc = inst.beq_generic(pc, end, C);
-                            break;
-                            
-                        case 9:
-                            pc = inst.bge(pc, end, N, V);
-                            break;
-                            
-                        case 10:
-                            pc = inst.blt(pc, end, N, V);
-                            break;
-                            
-                        case 11:
-                            pc = inst.bgt(pc, end, N, V, Z);
-                            break;
-                            
-                        case 12:
-                            pc = inst.ble(pc, end, N, V, Z);
-                            break;
-                            
-                        case 13:
-                            pc = inst.bhi(pc, end, C, Z);
-                            break;
-                            
-                        case 14:
-                            pc = inst.bls(pc, end, C, Z);
-                            break;
-                    }
-                    
-                    break;
-                    
-                case 4: //#todo
-                    pc++; //ignore
-                    end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
-                    mod_end = end_s.substring(2, 5);
-                    reg = end_s.substring(5, 8);
+                reg = end_s.substring(5, 8);
 //                    pc = inst.jmp(mod_end, reg);
-                    break;
-                    
-                case 5: //#todo
-                    reg = this.memoria.load(pc++);
-                    reg = reg.substring(1, 4);
-                    end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
+                break;
+
+            case 5: //#todo
+                reg = this.memoria.load(pc++);
+                reg = reg.substring(1, 4);
+                end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
 //                    pc = inst.sob(end_s, reg);
-                    break;
-                    
-                case 6: //#todo
-                    reg = this.memoria.load(pc++);
-                    reg2 = reg.substring(1, 4); //UTILIZADO PARA SALVAR DE ONDE VEIO ANTES DO JUMP
-                    end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
-                    mod_end = end_s.substring(2, 5);
-                    reg = end_s.substring(5, 8);
+                break;
+
+            case 6: //#todo
+                reg = this.memoria.load(pc++);
+                reg2 = reg.substring(1, 4); //UTILIZADO PARA SALVAR DE ONDE VEIO ANTES DO JUMP
+                end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
+                mod_end = end_s.substring(2, 5);
+                reg = end_s.substring(5, 8);
 //                    pc = inst.jsr(mod_end, reg, reg2);
-                    break;
-                    
-                case 7: //#TODO
-                    reg = this.memoria.load(pc++); //acho que é desprezível
+                break;
+
+            case 7: //#TODO
+                reg = this.memoria.load(pc++); //acho que é desprezível
 //                    pc = inst.rts();
-                    break;
-                    
-                case 8: //instruções de 1 operando PÁGINA 25
-                    op1 = this.memoria.loadByte(pc++);
-                    end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
-                    mod_end = end_s.substring(2, 5);
-                    reg = end_s.substring(5, 8);
-                    regShort = Short.parseShort(reg);
-                    this.regs.load(regShort);
-                    
-                    switch(op1) {
-                        case 0: //CLR
-                            this.regs.store(Integer.toBinaryString(inst.clr(regShort, N, Z)), regShort);
-                            break;
-                    
-                        case 1: //NOT
-                            this.regs.store(Integer.toBinaryString(inst.not(regShort, N, Z, V)), regShort);
-                            break;
-                            
-                        case 2: //INC
-//                            acc = inst.inc(regShort, N, Z, V, C);
-                            break;
-                            
-                        case 3: //DEC
+                break;
+
+            case 8: //instruções de 1 operando PÁGINA 25
+                operation = this.memoria.loadByte(pc++);
+                end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
+                mod_end = end_s.substring(2, 5);
+                reg = end_s.substring(5, 8);
+                regShort = Short.parseShort(reg, 2);
+                this.regs.load(regShort);
+                
+                System.out.println("ModEnd: " + mod_end);
+
+                
+                //AQUI MUDA CONFORME O MODO DE ENDERECAMENTO
+                valueShort = convertModEndToValue(reg, mod_end);
+//                regValueShort = Short.parseShort(valueShort, 2);
+                
+                System.out.println("Reg: " + reg + " RegShort: " + regShort);
+
+                switch (operation) {
+                    case 0: //CLR
+                        System.out.println("CLR");
+                        this.hierarchyStore(Integer.toBinaryString(inst.clr(valueShort, N, Z)), regShort, mod_end);
+//                        this.regs.store(Integer.toBinaryString(inst.clr(valueShort, N, Z)), regShort);
+                        break;
+
+                    case 1: //NOT
+                        System.out.println("NOT");
+                        this.regs.store(Integer.toBinaryString(inst.not(regShort, N, Z, V)), regShort);
+                        break;
+
+                    case 2: //INC
+                        System.out.println("INC");
+                        this.hierarchyStore(Integer.toBinaryString(inst.inc(valueShort, N, Z, V, C)), regShort, mod_end);
+                        break;
+
+                    case 3: //DEC
+                        System.out.println("DEC");
 //                            acc = inst.dec(regShort, N, Z, V, C);
-                            break;
-                            
-                        case 4: //NEG
+                        break;
+
+                    case 4: //NEG
+                        System.out.println("NEG");
 //                            acc = inst.neg(regShort, N, Z, V, C);
-                            break;
-                            
-                        case 5: //TST
+                        break;
+
+                    case 5: //TST
+                        System.out.println("TST");
 //                            inst.tst(N, Z);
-                            break;
-                            
-                        case 6: //ROR
+                        break;
+
+                    case 6: //ROR
+                        System.out.println("ROR");
 //                            acc = inst.ror(regShort, N, Z, V, C);
-                            break;
-                            
-                        case 7: //ROL
+                        break;
+
+                    case 7: //ROL
+                        System.out.println("ROL");
 //                            acc = inst.rol(regShort, N, Z, V, C);
-                            break;
-                            
-                        case 8: //ASR
+                        break;
+
+                    case 8: //ASR
+                        System.out.println("ASR");
 //                            acc = inst.asr(regShort, N, Z, V, C);
-                            break;
-                            
-                        case 9: //ASL
+                        break;
+
+                    case 9: //ASL
+                        System.out.println("ASL");
 //                            acc = inst.asl(regShort, N, Z, V, C);
-                            break;
-                            
-                        case 10: //ADC
+                        break;
+
+                    case 10: //ADC
+                        System.out.println("ADC");
 //                            acc = inst.adc(regShort, N, Z, V, C);
-                            break;
-                            
-                        case 11: //SBC
+                        break;
+
+                    case 11: //SBC
+                        System.out.println("SBC");
 //                            acc = inst.sbc(regShort, N, Z, V, C);
+                        break;
+
+                }
+                break;
+
+            default: //9 .. 15
+                if (opcode < 15) { //op de 2 enderecos
+                    //Encontra os 2 endereços e 2 modos de endereçamento
+                    end_s = this.memoria.load(pc++);
+                    mod_end = end_s.substring(0, 3);
+                    reg = end_s.substring(3, 4);
+                    regShort = Short.parseShort(reg, 2);
+
+                    end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
+                    reg += end_s.substring(0, 2);
+                    mod_end2 = end_s.substring(2, 5);
+                    reg2 = end_s.substring(5, 8);
+                    reg2Short = Short.parseShort(reg2, 2);
+
+                    switch (opcode) {
+                        case 9: //mov
+                            System.out.println("MOV");
+                            inst.mov(regShort, reg2Short, N, Z, V);
                             break;
-                            
-                            
-                                
+                        case 10: //add
+                            System.out.println("ADD");
+                            acc = inst.add(regShort, reg2Short, N, Z, V, C);
+                            break;
+                        case 11: //sub
+                            System.out.println("SUB");
+                            acc = inst.sub(regShort, reg2Short, N, Z, V, C);
+                            break;
+                        case 12: //cmp
+                            System.out.println("CMP");
+                            inst.cmp(regShort, reg2Short, N, Z, V);
+                            ;
+                            break;
+                        case 13: //and
+                            System.out.println("AND");
+                            inst.and(regShort, reg2Short, N, Z, V);
+                            break;
+                        case 14: //or
+                            System.out.println("OR");
+                            inst.or(regShort, reg2Short, N, Z, V);
+                            break;
                     }
-                    break;
-                    
-                default: //9 .. 15
-                    if (opcode < 15) { //op de 2 enderecos
-                        //Encontra os 2 endereços e 2 modos de endereçamento
-                        end_s = this.memoria.load(pc++);
-                        mod_end = end_s.substring(0, 3);
-                        reg = end_s.substring(3, 4);
-                        regShort = Short.parseShort(reg);
-                        
-                        end_s = this.memoria.load(pc++) + this.memoria.load(pc++);
-                        reg += end_s.substring(0, 2);
-                        mod_end2 = end_s.substring(2, 5);
-                        reg2 = end_s.substring(5, 8);
-                        reg2Short = Short.parseShort(reg2);
-                        
-                        switch(opcode) {
-                            case 9: //mov
-                                inst.mov(regShort, reg2Short, N, Z, V);
-                                break;
-                            case 10: //add
-                                acc = inst.add(regShort, reg2Short, N, Z, V, C);
-                                break;
-                            case 11: //sub
-                                acc = inst.sub(regShort, reg2Short, N, Z, V, C);
-                                break;
-                            case 12: //cmp
-                                inst.cmp(regShort, reg2Short, N, Z, V);;
-                                break;
-                            case 13: //and
-                                inst.and(regShort, reg2Short, N, Z, V);
-                                break;
-                            case 14: //or
-                                inst.or(regShort, reg2Short, N, Z, V);
-                                break;
-                        }
-                        
-                    }
-                    else { //halt
-                        pc++;
+
+                } else { //halt
+                    System.out.println("HLT");
+                    pc++;
 //                        this.inst.hlt();    
-                    }
-                    break;
-                    
-            }
- 
+                }
+                break;
+
+        }
+
         ri = memoria.load(pc); //atualiza Registrador de Instrucao
     }
-    
+
 }

@@ -291,7 +291,7 @@ public class tela extends javax.swing.JFrame {
             short internal_code;
             opcode = Short.parseShort(memoria.load(i++), 2);
           
-            System.out.println("opcde: " + opcode);
+//            System.out.println("opcde: " + opcode);
             switch(opcode) {
                 case 0:
                     model.addRow(new Object[]{"NOP", memoria.load(i++),"","DIR"});
@@ -452,7 +452,7 @@ public class tela extends javax.swing.JFrame {
                     }
                     else {
                         model.addRow(new Object[]{"HLT", memoria.load(i++),"","DIR"});
-                        i++;
+//                        i++;
                     }
                     break;
                     
@@ -461,10 +461,11 @@ public class tela extends javax.swing.JFrame {
         
         }
         
-        System.out.println("Linha tab: " + linhaTabSel);
+        model.addRow(new Object[]{"", "", "",""});
+//        System.out.println("Linha tab: " + linhaTabSel);
         jTable1.setRowSelectionInterval(linhaTabSel, linhaTabSel);
         linhaTabSel++;
-        System.out.println(linhaTabSel);
+//        System.out.println(linhaTabSel);
         
     }
     
@@ -473,14 +474,19 @@ public class tela extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
         model.setRowCount(0);
         
-        model.addRow(new Object[]{"reg1", mv.regs.load(0)});
-        model.addRow(new Object[]{"reg2", mv.regs.load(1)});
-        model.addRow(new Object[]{"reg3", mv.regs.load(2)});
-        model.addRow(new Object[]{"reg4", mv.regs.load(3)});
-        model.addRow(new Object[]{"reg5", mv.regs.load(4)});
-        model.addRow(new Object[]{"reg6", mv.regs.load(5)});
-        model.addRow(new Object[]{"reg7", mv.regs.load(6)});
-
+        model.addRow(new Object[]{"reg0", Integer.parseInt(mv.regs.load(0), 2)});
+        model.addRow(new Object[]{"reg1", Integer.parseInt(mv.regs.load(1), 2)});
+        model.addRow(new Object[]{"reg2", Integer.parseInt(mv.regs.load(2), 2)});
+        model.addRow(new Object[]{"reg3", Integer.parseInt(mv.regs.load(3), 2)});
+        model.addRow(new Object[]{"reg4", Integer.parseInt(mv.regs.load(4), 2)});
+        model.addRow(new Object[]{"reg5", Integer.parseInt(mv.regs.load(5), 2)});
+        model.addRow(new Object[]{"reg6", Integer.parseInt(mv.regs.load(6), 2)});
+        model.addRow(new Object[]{"reg7", Integer.parseInt(mv.regs.load(7), 2)});
+        
+        for (int i=0; i<30; i++) {
+            model.addRow(new Object[]{"mem"+i, Integer.parseInt(mv.memoria.load(i))});
+        }
+            
         if(mv.sp.empty()){model.addRow(new Object[]{"Stack", "empty"});}
         else{model.addRow(new Object[]{"Stack", mv.sp.peek()});}
         
