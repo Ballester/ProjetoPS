@@ -88,17 +88,17 @@ public class tela extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "opcode", "op1", "op2", "end"
+                "opcode", "reg1", "reg2", "modEnd1", "modEnd2"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -281,12 +281,16 @@ public class tela extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0);
         
-        
+        int rows = 0;
         for(int i=0; i<this.total_code;){
             int mod1 = 0;
             int mod2 = 0;
             
-            
+            String modEnd;
+            String modEnd2;
+            String load;
+            String reg1;
+            String reg2;
             short opcode;
             short internal_code;
             opcode = Short.parseShort(memoria.load(i++), 2);
@@ -294,18 +298,17 @@ public class tela extends javax.swing.JFrame {
 //            System.out.println("opcde: " + opcode);
             switch(opcode) {
                 case 0:
-                    model.addRow(new Object[]{"NOP", memoria.load(i++),"","DIR"});
-//                    i++;
+                    model.addRow(new Object[]{"NOP", "","","DIR"});
                     break;
                     
                 case 1:
-                    model.addRow(new Object[]{"SCC", memoria.load(i++),"","DIR"});
-//                    i++;
+                    model.addRow(new Object[]{"SCC", "","","DIR"});
+                    i++;
                     break;
                     
                 case 2:
-                    model.addRow(new Object[]{"CCC", memoria.load(i++),"","DIR"});
-//                    i++;
+                    model.addRow(new Object[]{"CCC", "","","DIR"});
+                    i++;
                     break;
                     
                 case 3:
@@ -313,158 +316,186 @@ public class tela extends javax.swing.JFrame {
                     
                     switch(internal_code) {
                         case 0:
-                            model.addRow(new Object[]{"BR", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BR", "","","IM"});
+                            i++;
                             break;
                         case 1:
-                            model.addRow(new Object[]{"BNE", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BNE", "","", "IM"});
+                            i++;
                             break;
                         case 2:
-                            model.addRow(new Object[]{"BEQ", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BEQ", "","", "IM"});
+                            i++;
                             break;
                         case 3:
-                            model.addRow(new Object[]{"BPL", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BPL", "","", "IM"});
+                            i++;
                             break;
                         case 4:
-                            model.addRow(new Object[]{"BMI", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BMI", "","", "IM"});
+                            i++;
                             break;
                         case 5:
-                            model.addRow(new Object[]{"BVC", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BVC", "","", "IM"});
+                            i++;
                             break;
                         case 6:
-                            model.addRow(new Object[]{"BVS", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BVS", "", "", "IM"});
+                            i++;
                             break;
                         case 7:
-                            model.addRow(new Object[]{"BCC", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BCC", "", "", "IM"});
+                            i++;
                             break;
                         case 8:
-                            model.addRow(new Object[]{"BCS", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BCS", "", "", "IM"});
+                            i++;
                             break;
                         case 9:
-                            model.addRow(new Object[]{"BGE", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BGE", "", "", "IM"});
+                            i++;
                             break;
                         case 10:
-                            model.addRow(new Object[]{"BLT", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BLT", "", "", "IM"});
+                            i++;
                             break;
                         case 11:
-                            model.addRow(new Object[]{"BGT", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BGT", "", "", "IM"});
+                            i++;
                             break;
                         case 12:
-                            model.addRow(new Object[]{"BLE", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BLE", "", "", "IM"});
+                            i++;
                             break;
                         case 13:
-                            model.addRow(new Object[]{"BHI", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BHI", "", "", "IM"});
+                            i++;
                             break;
                         case 14:
-                            model.addRow(new Object[]{"BLS", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"BLS", "", "", "IM"});
+                            i++;
                             break;
                     }
                     i++;
                     break;
                     
                 case 4:
-                    model.addRow(new Object[]{"JMP", memoria.load(i++),"","DIR"});
-                    i++;i++;
+                    model.addRow(new Object[]{"JMP", "","","IM"});
+                    i++;i++;i++;
                     break;
                     
                 case 5:
-                    model.addRow(new Object[]{"SOB", memoria.load(i++),"","DIR"});
-                    i++;i++;
+                    model.addRow(new Object[]{"SOB", "","","IM"});
+                    i++;i++;i++;
                     break;
                     
                 case 6:                    
-                    model.addRow(new Object[]{"JSR", memoria.load(i++),"","DIR"});
-                    i++;i++;
+                    model.addRow(new Object[]{"JSR", "","","IM"});
+                    i++;i++;i++;
                     break;
                     
 				
 		case 7:
-                    model.addRow(new Object[]{"RTS", memoria.load(i++),"","DIR"});
+                    model.addRow(new Object[]{"RTS", "","","IM"});
+                    i++;
                     break;
 				
                 case 8:
                     internal_code = Short.parseShort(memoria.load(i++), 2);
+                    load = memoria.load(i++) + memoria.load(i++);
+                    modEnd = load.substring(2, 5);
+                    reg1 = load.substring(5, 8);
                     switch(internal_code) {
                         case 0:
-                            model.addRow(new Object[]{"CLR", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"CLR", reg1,"", modEnd});
                             break;
                         case 1:
-                            model.addRow(new Object[]{"NOT", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"NOT", reg1,"",modEnd});
                             break;
                         case 2:
-                            model.addRow(new Object[]{"INC", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"INC", reg1,"",modEnd});
                             break;
                         case 3:
-                            model.addRow(new Object[]{"DEC", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"DEC", reg1,"",modEnd});
                             break;
                         case 4:
-                            model.addRow(new Object[]{"NEG", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"NEG", reg1,"",modEnd});
                             break;
                         case 5:
-                            model.addRow(new Object[]{"TST", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"TST", reg1,"",modEnd});
                             break;
                         case 6:
-                            model.addRow(new Object[]{"ROR", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"ROR", reg1,"",modEnd});
                             break;
                         case 7:
-                            model.addRow(new Object[]{"ROL", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"ROL", reg1,"",modEnd});
                             break;
                         case 8:
-                            model.addRow(new Object[]{"ASR", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"ASR", reg1,"",modEnd});
                             break;
                         case 9:
-                            model.addRow(new Object[]{"ASL", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"ASL", reg1,"",modEnd});
                             break;
                         case 10:
-                            model.addRow(new Object[]{"ADC", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"ADC", reg1,"",modEnd});
                             break;
                         case 11:
-                            model.addRow(new Object[]{"SBC", memoria.load(i++),"","DIR"});
+                            model.addRow(new Object[]{"SBC", reg1,"",modEnd});
                             break;             
                     }
-                    i++;
                     break;
                     
 					
 		default:
                     if (opcode < 15) {
+                        load = memoria.load(i++) + memoria.load(i++) + memoria.load(i++);
+                        modEnd = load.substring(0, 3);
+                        reg1 = load.substring(3, 6);
+                        modEnd2 = load.substring(6, 9);
+                        reg2 = load.substring(9, 12);
+                        
                         switch(opcode) {
                             case 9:
-                                model.addRow(new Object[]{"MOV", memoria.load(i++),"","DIR"});
+                                model.addRow(new Object[]{"MOV", reg1,reg2, modEnd, modEnd2});
                                 break;
                             case 10:
-                                model.addRow(new Object[]{"ADD", memoria.load(i++),"","DIR"});
+                                model.addRow(new Object[]{"ADD", reg1, reg2, modEnd,modEnd2});
                                 break;
                             case 11:
-                                model.addRow(new Object[]{"SUB", memoria.load(i++),"","DIR"});
+                                model.addRow(new Object[]{"SUB", reg1, reg2, modEnd, modEnd2});
                                 break;
                             case 12:
-                                model.addRow(new Object[]{"CMP", memoria.load(i++),"","DIR"});
+                                model.addRow(new Object[]{"CMP", reg1, reg2, modEnd, modEnd2});
                                 break;
                             case 13:
-                                model.addRow(new Object[]{"AND", memoria.load(i++),"","DIR"});
+                                model.addRow(new Object[]{"AND", reg1, reg2, modEnd, modEnd2});
                                 break;
                             case 14:
-                                model.addRow(new Object[]{"OR", memoria.load(i++),"","DIR"});
+                                model.addRow(new Object[]{"OR", reg1, reg2, modEnd, modEnd2});
                                 break;
 
                         }
-                        i++;i++;i++;
                     }
                     else {
-                        model.addRow(new Object[]{"HLT", memoria.load(i++),"","DIR"});
-//                        i++;
+                        model.addRow(new Object[]{"HLT", "","","DIR"});
+                        i++;
                     }
+
                     break;
                     
             }
+            if (mv.pc == i) {
+                jTable1.setRowSelectionInterval(rows, rows);
+            }
+            rows++;
             
         
         }
         
         model.addRow(new Object[]{"", "", "",""});
 //        System.out.println("Linha tab: " + linhaTabSel);
-        jTable1.setRowSelectionInterval(linhaTabSel, linhaTabSel);
-        linhaTabSel++;
+//        jTable1.setRowSelectionInterval(linhaTabSel, linhaTabSel);
+//        linhaTabSel++;
 //        System.out.println(linhaTabSel);
         
     }
@@ -544,7 +575,7 @@ public class tela extends javax.swing.JFrame {
         short ri = Short.parseShort(mv.ri);
         
         if(opMode1.isSelected()){
-            while(ri != 11){
+            while(ri != 15){
                 mv.run();
                 atualizarRegistradores(mv);
                 atualizarTabela(mv.memoria);
@@ -557,7 +588,7 @@ public class tela extends javax.swing.JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("noiz");
-                    if(ri != 11){
+                    if(ri != 15){
                         mv.run();
                         atualizarRegistradores(mv);
                         atualizarTabela(mv.memoria);
@@ -580,7 +611,7 @@ public class tela extends javax.swing.JFrame {
         
         
         if(opMode3.isSelected()){
-            if(ri != 11){
+            if(ri != 15){
                 mv.run();
                 atualizarRegistradores(mv);
                 atualizarTabela(mv.memoria);
@@ -589,7 +620,7 @@ public class tela extends javax.swing.JFrame {
                 
             }    
         }
-        if(ri == 11){
+        if(ri == 15){
             JFrame frame = new JFrame();
             JOptionPane.showMessageDialog(frame,"DONE!");
         }

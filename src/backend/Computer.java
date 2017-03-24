@@ -114,6 +114,8 @@ public class Computer {
         int mod1 = 0, mod2 = 0;
         byte operation, op1, op2;
 
+        System.out.println("PC:" + pc);
+        
         opcode = Short.parseShort(this.memoria.load(pc++), 2);
         String regs;
         String reg;
@@ -281,7 +283,6 @@ public class Computer {
                 this.regs.load(regShort);
                 
                 System.out.println("ModEnd: " + mod_end);
-
                 
                 //AQUI MUDA CONFORME O MODO DE ENDERECAMENTO
                 valueShort = convertModEndToValue(reg, mod_end);
@@ -367,11 +368,15 @@ public class Computer {
                     mod_end2 = end_s.substring(2, 5);
                     reg2 = end_s.substring(5, 8);
                     reg2Short = Short.parseShort(reg2, 2);
+                    
+                    valueShort = convertModEndToValue(reg, mod_end);
 
                     switch (opcode) {
                         case 9: //mov
                             System.out.println("MOV");
-                            inst.mov(regShort, reg2Short, N, Z, V);
+                            valueShort = convertModEndToValue(reg, mod_end);
+                            this.hierarchyStore(Integer.toBinaryString(valueShort), reg2Short, mod_end2);
+//                            inst.mov(regShort, reg2Short, N, Z, V);
                             break;
                         case 10: //add
                             System.out.println("ADD");
