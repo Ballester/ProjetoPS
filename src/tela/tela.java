@@ -44,7 +44,7 @@ public class tela extends javax.swing.JFrame {
         
         initComponents();
         opMode1.setSelected(true);
-        filePath.setText("/home/ballester/Documents/trabalhos/ProjetoPS/src/input_ballester");
+        filePath.setText("/home/ballester/Documents/trabalhos/ProjetoPS/src/input_ballester_from_montador");
         
      
     }
@@ -299,6 +299,7 @@ public class tela extends javax.swing.JFrame {
             switch(opcode) {
                 case 0:
                     model.addRow(new Object[]{"NOP", "","","DIR"});
+                    i++;
                     break;
                     
                 case 1:

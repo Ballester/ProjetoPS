@@ -67,12 +67,12 @@ public class Montador {
         this.instructions.put("BCC", "00110111DDDDDDDD");
         
         //1 operando
-        this.instructions.put("CLR", "10000000XXMMMRRR");
-        this.instructions.put("NOT", "10000001XXMMMRRR");
-        this.instructions.put("INC", "10000010XXMMMRRR");
-        this.instructions.put("DEC", "10000011XXMMMRRR");
-        this.instructions.put("NEG", "10000100XXMMMRRR");
-        this.instructions.put("TST", "10000101XXMMMRRR");
+        this.instructions.put("CLR", "1000000000MMMRRR");
+        this.instructions.put("NOT", "1000000100MMMRRR");
+        this.instructions.put("INC", "1000001000MMMRRR");
+        this.instructions.put("DEC", "1000001100MMMRRR");
+        this.instructions.put("NEG", "1000010000MMMRRR");
+        this.instructions.put("TST", "1000010100MMMRRR");
 
         //2 operandos
         this.instructions.put("MOV", "1001MMMRRRMMMRRR");
@@ -101,24 +101,41 @@ public class Montador {
         i++;
         try {
             String[] ops = parts[i].split(",");
-            System.out.println(trans_copy + "aqui");
+//            System.out.println(trans_copy + " antes das subs");
             if (trans_copy.indexOf("MMM") != -1) {
-                trans_copy = trans_copy.replaceFirst("MMM", opToBinary(ops[0], 3));
+                if (ops[0].contains("+")) {
+                    trans_copy = trans_copy.replaceFirst("MMM", "001");
+                }
+                else if (ops[0].contains("-")) {
+                    trans_copy = trans_copy.replaceFirst("MMM", "010");
+                }
+                else {
+                    trans_copy = trans_copy.replaceFirst("MMM", "000");
+                }                
+                
+                trans_copy = trans_copy.replaceFirst("RRR", opToBinary(ops[0], 3));
+            }
+            if (trans_copy.indexOf("MMM") != -1) {
+                if (ops[1].contains("+")) {
+                    trans_copy = trans_copy.replaceFirst("MMM", "001");
+                }
+                else if (ops[1].contains("-")) {
+                    trans_copy = trans_copy.replaceFirst("MMM", "010");
+                }
+                else {
+                    trans_copy = trans_copy.replaceFirst("MMM", "000");
+                }                       
                 trans_copy = trans_copy.replaceFirst("RRR", opToBinary(ops[1], 3));
             }
-            if (trans_copy.indexOf("MMM") != -1) {
-                trans_copy = trans_copy.replaceFirst("MMM", opToBinary(ops[2], 3));
-                trans_copy = trans_copy.replaceFirst("RRR", opToBinary(ops[3], 3));
-            }
             if (trans_copy.indexOf("DDDDDDDD") != -1) {
-                trans_copy = trans_copy.replace("DDDDDDDD", opToBinary(ops[2], 8));
+                trans_copy = trans_copy.replace("DDDDDDDD", opToBinary(ops[0], 8));
             }
 
 //            System.out.println(trans_copy);
            
         }
         catch(Exception e) {
-            System.out.println(e);
+//            System.out.println(e);
         }
         
         System.out.println(trans_copy);
@@ -127,16 +144,16 @@ public class Montador {
     }
     
     public String opToBinary(String op, int n) {
-        System.out.println("OP: " + op);
+        op = op.replace("+", "").replace("-", "");
+//        System.out.println("OP: " + op);
         try {
-            return String.format("%3s", Integer.toBinaryString(Integer.parseInt(op))).replace(' ', '0');
+            return String.format("%" + n + "s", Integer.toBinaryString(Integer.parseInt(op))).replace(' ', '0');
 //        return str.substring(str.length()-4, str.length()-1);
         }
         catch(Exception e) {
-            System.out.println(labels);
-            System.out.println("OP2: " + this.labels.get(op));
+//            System.out.println(e + " OPTOBINARY " + op);
             //aqui implementa quando é uma label ao invés de um número
-            return String.format("%3s", Integer.toBinaryString(this.labels.get(op))).replace(' ', '0');
+            return String.format("%" + n + "s", Integer.toBinaryString(this.labels.get(op))).replace(' ', '0');
         }
     }
     

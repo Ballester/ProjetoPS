@@ -1,3 +1,9 @@
 Oi: NOP ;hello
-Ola: MOV 2,3,4,5 ;hi
-MOV Oi,3,4,5
+INC 2
+Ola: MOV 2,3 ;hi
+MOV 3,3
+NOT 3
+SUB 2,3
+MOV 3,2
+INC 2
+BR Ola
