@@ -132,7 +132,8 @@ public class Instructions {
     public short clr(short op1, boolean N, boolean Z) {
         Z = true;
         N = false;
-        return (short) (op1 = 0);
+        op1 = 0;
+        return op1;
     }
     
     public short not(short op1, boolean N, boolean Z, boolean C) {

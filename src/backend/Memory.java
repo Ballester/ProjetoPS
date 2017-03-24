@@ -16,6 +16,9 @@ public class Memory {
     public Memory(int size) {
         this.memory = new String[size];
         this.size = size;
+        for (int i=0; i<size; i++) {
+            this.memory[i] = "0";
+        }
     }
     
     public void store(String value, int pos) {
@@ -24,6 +27,10 @@ public class Memory {
     
     public void store(String value, short pos) {
         this.memory[pos] = value;
+    }
+    
+    public String load(int pos) {
+        return this.memory[pos];
     }
     
     public String load(short pos) {

@@ -30,8 +30,9 @@ public class Computer {
     DataInputStream din;
     Instructions inst;
     public Memory memoria;
+    public Memory regs;
             
-    public Computer(Memory memoria) {
+    public Computer(Memory memoria, Memory registradores) {
         this.sp = new Stack();
         this.pc = 0;
         this.acc = this.re = 0;
@@ -41,33 +42,32 @@ public class Computer {
         //this.modOp = modoDeOperacao;
         this.inst = new Instructions();
         this.memoria = memoria;
+        this.regs = registradores;   
         
         
-
     }
-    
     public void reset(){
         this.sp = new Stack();
-        this.pc = 0;
-        this.acc = this.re = 0;
-        this.ri = "";
+//        this.pc = 0;
+//        this.acc = this.re = 0;
+//        this.ri = "";
     }
-    
+
     public void run(){
-        byte opcode = 0;
+        short opcode = 0;
         int mod1=0, mod2=0;
         byte op1, op2;
-        
-        if (this.modOp == 0) {
-            opcode = this.memoria.loadByte(pc++);
-            String regs;
-            String reg;
-            String reg2;
-            String mod_end;
-            String mod_end2;
-            String end_s;
-            short end, regShort, reg2Short;
-            
+
+//        if (this.modOp == 0) {
+        opcode = Short.parseShort(this.memoria.load(pc++));
+        String regs;
+        String reg;
+        String reg2;
+        String mod_end;
+        String mod_end2;
+        String end_s;
+        short end, regShort, reg2Short;
+
             //System.out.println("opcode: " + opcode);
             
             //Verifica o modo de enderaçamento
@@ -240,54 +240,55 @@ public class Computer {
                     mod_end = end_s.substring(2, 5);
                     reg = end_s.substring(5, 8);
                     regShort = Short.parseShort(reg);
+                    this.regs.load(regShort);
                     
                     switch(op1) {
                         case 0: //CLR
-                            acc = inst.clr(regShort, N, Z);
+                            this.regs.store(Integer.toBinaryString(inst.clr(regShort, N, Z)), regShort);
                             break;
                     
                         case 1: //NOT
-                            acc = inst.not(regShort, N, Z, V);
+                            this.regs.store(Integer.toBinaryString(inst.not(regShort, N, Z, V)), regShort);
                             break;
                             
                         case 2: //INC
-                            acc = inst.inc(regShort, N, Z, V, C);
+//                            acc = inst.inc(regShort, N, Z, V, C);
                             break;
                             
                         case 3: //DEC
-                            acc = inst.dec(regShort, N, Z, V, C);
+//                            acc = inst.dec(regShort, N, Z, V, C);
                             break;
                             
                         case 4: //NEG
-                            acc = inst.neg(regShort, N, Z, V, C);
+//                            acc = inst.neg(regShort, N, Z, V, C);
                             break;
                             
                         case 5: //TST
-                            inst.tst(N, Z);
+//                            inst.tst(N, Z);
                             break;
                             
                         case 6: //ROR
-                            acc = inst.ror(regShort, N, Z, V, C);
+//                            acc = inst.ror(regShort, N, Z, V, C);
                             break;
                             
                         case 7: //ROL
-                            acc = inst.rol(regShort, N, Z, V, C);
+//                            acc = inst.rol(regShort, N, Z, V, C);
                             break;
                             
                         case 8: //ASR
-                            acc = inst.asr(regShort, N, Z, V, C);
+//                            acc = inst.asr(regShort, N, Z, V, C);
                             break;
                             
                         case 9: //ASL
-                            acc = inst.asl(regShort, N, Z, V, C);
+//                            acc = inst.asl(regShort, N, Z, V, C);
                             break;
                             
                         case 10: //ADC
-                            acc = inst.adc(regShort, N, Z, V, C);
+//                            acc = inst.adc(regShort, N, Z, V, C);
                             break;
                             
                         case 11: //SBC
-                            acc = inst.sbc(regShort, N, Z, V, C);
+//                            acc = inst.sbc(regShort, N, Z, V, C);
                             break;
                             
                             
@@ -338,9 +339,7 @@ public class Computer {
                     break;
                     
             }
-            
-        }
-        
+ 
         ri = memoria.load(pc); //atualiza Registrador de Instrucao
     }
     
